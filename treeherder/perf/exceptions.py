@@ -1,0 +1,2 @@
+class NoDataCyclingAtAll(Exception):
+    pass

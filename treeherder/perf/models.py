@@ -12,6 +12,7 @@ from treeherder.model.models import (Job,
                                      OptionCollection,
                                      Push,
                                      Repository)
+from treeherder.perf.exceptions import NoDataCyclingAtAll
 
 SIGNATURE_HASH_LENGTH = 40
 
@@ -107,31 +108,93 @@ class PerformanceDatumManager(models.Manager):
     Convenience functions for operations on groups of performance datums
     """
 
-    def cycle_data(self, repository, cycle_interval, chunk_size, sleep_time):
+    # Performance sheriffs check these daily
+    MAIN_REPOS = [
+        'autoland',
+        'mozilla-inbound',
+        'mozilla-beta',
+        'mozilla-central'
+    ]
+
+    def _should_quit(self, started_at, max_overall_runtime):
+        now = datetime.datetime.now()
+        elapsed_runtime = now - started_at
+
+        return max_overall_runtime < elapsed_runtime
+
+    def cycle_data(self, repository, cycle_interval, chunk_size, sleep_time,
+                   unsheriffed_repos_expire_days, logger,
+                   started_at, max_overall_runtime):
         """Delete data older than cycle_interval, splitting the target data
 into chunks of chunk_size size."""
+        logger.warning('Cycling Perfherder data from {0} repository...'
+                       .format(repository.name))
+        max_timestamp = self._determine_max_timestamp(repository.name,
+                                                      cycle_interval,
+                                                      unsheriffed_repos_expire_days)
 
-        max_timestamp = datetime.datetime.now() - cycle_interval
+        try:
+            self._delete_in_chunks(repository, max_timestamp, chunk_size, sleep_time, logger,
+                                   started_at, max_overall_runtime)
+        except NoDataCyclingAtAll as ex:
+            logger.warning('Exception: {}'.format(ex))
+            return
 
-        # seperate datums into chunks
-        while True:
-            perf_datums_to_cycle = list(self.filter(
-                repository=repository,
-                push_timestamp__lt=max_timestamp).values_list('id', flat=True)[:chunk_size])
-            if not perf_datums_to_cycle:
-                # we're done!
-                break
-            self.filter(id__in=perf_datums_to_cycle).delete()
+        # also remove any signatures which are (no longer) associated with
+        # a job
+        logger.warning('Removing performance signatures with missing jobs...')
+        for signature in PerformanceSignature.objects.filter(
+                repository=repository):
+            if not self.filter(
+                    repository=repository,  # redundant, but leverages (repository, signature) compound index
+                    signature=signature).exists():
+                signature.delete()
+
+    def _delete_in_chunks(self, repository, max_timestamp, chunk_size, sleep_time, logger,
+                          started_at, max_overall_runtime):
+        from django.db import connection
+        any_succesful_attempt = False
+
+        with connection.cursor() as cursor:
+            while True:
+                if self._should_quit(started_at, max_overall_runtime):
+                    logger.info('Max runtime exceeded. Quitting cycling for repository {}'
+                                .format(repository.name))
+                    break
+
+                try:
+                    cursor.execute('''
+                        DELETE FROM `performance_datum`
+                        WHERE repository_id = %s AND
+                            push_timestamp < %s
+                        LIMIT %s
+                    ''', [repository.id, max_timestamp, chunk_size])
+                except Exception as ex:
+                    logger.warning('Failed to delete performance data chunk, while running "{}" query. '
+                                   .format(cursor._last_executed))
+
+                    if any_succesful_attempt is False:
+                        raise NoDataCyclingAtAll from ex
+                    break
+                else:
+                    deleted_rows = cursor.rowcount
+
+                    if deleted_rows == 0:
+                        break  # finished removing all expired data
+                    else:
+                        any_succesful_attempt = True
+                        logger.warning('Successfully deleted some rows')
+
             if sleep_time:
                 # Allow some time for other queries to get through
                 time.sleep(sleep_time)
 
-        # also remove any signatures which are (no longer) associated with
-        # a job
-        for signature in PerformanceSignature.objects.filter(
-                repository=repository):
-            if not self.filter(signature=signature).exists():
-                signature.delete()
+    def _determine_max_timestamp(self, repo_name, cycle_interval, unsheriffed_repos_expire_days):
+        if repo_name in self.MAIN_REPOS:
+            return datetime.datetime.now() - cycle_interval
+
+        # eagerly delete perf data from nonsheriffed repos
+        return datetime.datetime.now() - unsheriffed_repos_expire_days
 
 
 class PerformanceDatum(models.Model):
@@ -156,9 +219,9 @@ class PerformanceDatum(models.Model):
     class Meta:
         db_table = 'performance_datum'
         index_together = [
-            # this should speed up the typical "get a range of performance datums" query
+            # Speeds up the typical "get a range of performance datums" query
             ('repository', 'signature', 'push_timestamp'),
-            # this should speed up the compare view in treeherder (we only index on
+            # Speeds up the compare view in treeherder (we only index on
             # repository because we currently filter on it in the query)
             ('repository', 'signature', 'push')]
         unique_together = ('repository', 'job', 'push', 'signature')
