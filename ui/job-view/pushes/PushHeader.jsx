@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import isEqual from 'lodash/isEqual';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faMinusSquare,
@@ -23,6 +22,7 @@ import { withPushes } from '../context/Pushes';
 import { withNotifications } from '../../shared/context/Notifications';
 import PushHealthStatus from '../../shared/PushHealthStatus';
 import { getUrlParam, setUrlParam } from '../../helpers/location';
+import { didObjectsChange, didValuesChange } from '../../helpers/object';
 
 import PushActionMenu from './PushActionMenu';
 
@@ -87,33 +87,17 @@ class PushHeader extends React.Component {
   }
 
   shouldComponentUpdate(prevProps) {
-    const {
-      jobCounts: prevJobCounts,
-      watchState: prevWatchState,
-      isLoggedIn: prevIsLoggedIn,
-      selectedRunnableJobs: prevSelectedRunnableJobs,
-      runnableVisible: prevRunnableVisible,
-      collapsed: prevCollapsed,
-      pushHealthVisibility: prevPushHealthVisibility,
-    } = prevProps;
-    const {
-      jobCounts,
-      watchState,
-      isLoggedIn,
-      selectedRunnableJobs,
-      runnableVisible,
-      collapsed,
-      pushHealthVisibility,
-    } = this.props;
-
     return (
-      !isEqual(prevJobCounts, jobCounts) ||
-      prevWatchState !== watchState ||
-      prevIsLoggedIn !== isLoggedIn ||
-      prevSelectedRunnableJobs !== selectedRunnableJobs ||
-      prevRunnableVisible !== runnableVisible ||
-      prevCollapsed !== collapsed ||
-      prevPushHealthVisibility !== pushHealthVisibility
+      didValuesChange(this.props, prevProps, ['jobCounts']) ||
+      didObjectsChange(this.props, prevProps, [
+        'watchState',
+        'isLoggedIn',
+        'selectedRunnableJobs',
+        'runnableVisible',
+        'collapsed',
+        'pushHealthVisibility',
+        'filterModel',
+      ])
     );
   }
 
