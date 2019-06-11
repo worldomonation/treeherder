@@ -21,12 +21,11 @@ export class SelectedTestsContainer extends React.Component {
 
   render() {
     const { seriesList, addTestData } = this.props;
-    console.log(seriesList);
     return (
       <Container className="graph-legend-table">
         {seriesList.length > 0 &&
           seriesList.map(series => (
-            <div>
+            <div key={series.id}>
               <span className="close" onClick={() => {}}>
                 <FontAwesomeIcon icon={faTimes} size="sm" title="" />
               </span>
