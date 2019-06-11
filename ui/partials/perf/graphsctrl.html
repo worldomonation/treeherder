@@ -4,7 +4,7 @@
       <div ng-show="seriesList.length == 0">
         <p>Nothing here yet</p>
       </div>
-      <table class="table table-bordered graph-legend-table">
+      <!-- <table class="table table-bordered graph-legend-table">
         <tr ng-repeat="series in seriesList">
           <td>
             <button class="close" ng-click="removeSeries(series.projectName, series.signature)">
@@ -20,7 +20,7 @@
               <input title="Show/Hide series" type="checkbox" ng-model="series.visible" class="show-hide-check" ng-change="showHideSeries(series.signature)">
           </td>
         </tr>
-      </table>
+      </table> -->
       <button id="add-test-data-button" class="btn btn-primary-soft" ng-click="addTestData()">
         <span class="fas fa-plus" aria-hidden="true"></span> Add <span ng-show="seriesList.length > 0">more</span> test data</button>
     </div>
