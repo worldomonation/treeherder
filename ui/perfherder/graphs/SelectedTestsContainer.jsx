@@ -18,21 +18,22 @@ export class SelectedTestsContainer extends React.Component {
     super(props);
     this.state = {};
   }
-
+  // TODO series info isn't shown in url anymore when tests are added
   render() {
-    const { seriesList, addTestData } = this.props;
+    const { seriesList, addTestData, removeSeries } = this.props;
     return (
       <Container className="graph-legend-table">
         {seriesList.length > 0 &&
           seriesList.map(series => (
             <div key={series.id}>
-              <span className="close" onClick={() => {}}>
+              <span className="close" onClick={() => removeSeries(series.projectName, series.signature)}>
                 <FontAwesomeIcon icon={faTimes} size="sm" title="" />
               </span>
               {/* style="border-left-color: {{series.blockColor}}" ng-class="{'series-inactive':!series.visible}" */}
               <div className="graph-legend">
-                <a
-                  href=""
+                <p
+                  className="btn btn-link text-info"
+                  role="button"
                   id="test-name"
                   onClick={() =>
                     addTestData('addRelatedConfigs', series.signature)
@@ -40,7 +41,7 @@ export class SelectedTestsContainer extends React.Component {
                   title="Add related configurations"
                 >
                   {series.name}
-                </a>
+                </p>
                 <br />
                 {/* <a href="" id="project-name" ng-click="addTestData('addRelatedBranches', series.signature)" title="Add related branches">{{series.projectName}}</a><br/>
           <a href="" id="platform" ng-click="addTestData('addRelatedPlatform', series.signature)" title="Add related platforms">{{series.platform}}</a><br/> */}
@@ -85,7 +86,7 @@ perf.component(
   'selectedTestsContainer',
   react2angular(
     SelectedTestsContainer,
-    ['seriesList', 'addTestData'],
+    ['seriesList', 'addTestData', 'removeSeries'],
     ['$stateParams', '$state'],
   ),
 );
