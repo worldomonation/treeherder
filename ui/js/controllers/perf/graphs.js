@@ -664,7 +664,6 @@ perf.controller('GraphsCtrl', [
         }
 
         function addSeriesList(partialSeriesList) {
-            const tempSeriesList = [];
             $q.all(partialSeriesList.map(async function (partialSeries) {
                 $scope.loadingGraphs = true;                
                 const params = { framework: partialSeries.frameworkId };
@@ -688,9 +687,9 @@ perf.controller('GraphsCtrl', [
                 seriesSummary.visible = partialSeries.visible;
                 seriesSummary.color = availableColors.pop();
                 seriesSummary.highlighted = partialSeries.highlighted;
-                tempSeriesList.push(seriesSummary);
+                $scope.seriesList.push(seriesSummary);
 
-                $q.all(tempSeriesList.map(getSeriesData)).then(function () {
+                $q.all($scope.seriesList.map(getSeriesData)).then(function () {
                     plotGraph();
                     updateDocumentTitle();
                     $scope.loadingGraphs = false;
@@ -698,7 +697,7 @@ perf.controller('GraphsCtrl', [
                         showTooltip($scope.selectedDataPoint);
                     }
                 });
-                $scope.seriesList = tempSeriesList;
+                $scope.seriesList = [...$scope.seriesList];
             }));
         }
 
@@ -903,13 +902,12 @@ perf.controller('GraphsCtrl', [
                 });
                 
                 modalInstance.result.then(function (seriesList) {
-                    const tempSeriesList = [];
                     $scope.loadingGraphs = true;
                     seriesList.forEach(function (series) {
                         series.hightlightedPoints = [];
                         series.visible = true;
                         series.color = availableColors.pop();
-                        tempSeriesList.push(series);
+                        $scope.seriesList.push(series);
                     });
                     if (!$scope.highlightedRevision) {
                         $scope.highlightedRevision = '';
@@ -918,11 +916,11 @@ perf.controller('GraphsCtrl', [
                         $scope.zoom = {};
                     }
                     updateDocument();
-                    $q.all(tempSeriesList.map(getSeriesData)).then(function () {
+                    $q.all($scope.seriesList.map(getSeriesData)).then(function () {
                         plotGraph();
                         $scope.loadingGraphs = false;
                     });
-                    $scope.seriesList = tempSeriesList;
+                    $scope.seriesList = [...$scope.seriesList];
                 });
             };
         });

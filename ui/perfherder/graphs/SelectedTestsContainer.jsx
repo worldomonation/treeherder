@@ -18,6 +18,7 @@ export class SelectedTestsContainer extends React.Component {
     super(props);
     this.state = {};
   }
+
   // TODO series info isn't shown in url anymore when tests are added
   render() {
     const { seriesList, addTestData, removeSeries } = this.props;
@@ -26,7 +27,12 @@ export class SelectedTestsContainer extends React.Component {
         {seriesList.length > 0 &&
           seriesList.map(series => (
             <div key={series.id}>
-              <span className="close" onClick={() => removeSeries(series.projectName, series.signature)}>
+              <span
+                className="close"
+                onClick={() =>
+                  removeSeries(series.projectName, series.signature)
+                }
+              >
                 <FontAwesomeIcon icon={faTimes} size="sm" title="" />
               </span>
               {/* style="border-left-color: {{series.blockColor}}" ng-class="{'series-inactive':!series.visible}" */}
