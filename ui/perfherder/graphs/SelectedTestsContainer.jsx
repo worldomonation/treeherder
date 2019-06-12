@@ -22,6 +22,7 @@ export class SelectedTestsContainer extends React.Component {
   // TODO series info isn't shown in url anymore when tests are added
   render() {
     const { seriesList, addTestData, removeSeries } = this.props;
+
     return (
       <Container className="graph-legend-table">
         {seriesList.length > 0 &&
@@ -37,23 +38,37 @@ export class SelectedTestsContainer extends React.Component {
               </span>
               {/* style="border-left-color: {{series.blockColor}}" ng-class="{'series-inactive':!series.visible}" */}
               <div className="graph-legend">
-                <p
-                  className="btn btn-link text-info"
-                  role="button"
-                  id="test-name"
+                <span
+                  className="p-0 btn btn-link text-info text-left"
                   onClick={() =>
                     addTestData('addRelatedConfigs', series.signature)
                   }
                   title="Add related configurations"
                 >
                   {series.name}
-                </p>
+                </span>
+                <span
+                  className="p-0 btn btn-link text-muted text-left"
+                  onClick={() =>
+                    addTestData('addRelatedBranches', series.signature)
+                  }
+                  title="Add related branches"
+                >
+                  {series.projectName}
+                </span>
                 <br />
-                {/* <a href="" id="project-name" ng-click="addTestData('addRelatedBranches', series.signature)" title="Add related branches">{{series.projectName}}</a><br/>
-          <a href="" id="platform" ng-click="addTestData('addRelatedPlatform', series.signature)" title="Add related platforms">{{series.platform}}</a><br/> */}
+                <span
+                  className="p-0 btn btn-link text-muted text-left"
+                  onClick={() =>
+                    addTestData('addRelatedPlatforms', series.signature)
+                  }
+                  title="Add related branches"
+                >
+                  {series.platform}
+                </span>
+                <p className="small text-truncate">{series.signature}</p>
               </div>
-              {/* <p className="small signature">{series.signature}</p>
-        <input title="Show/Hide series" type="checkbox" ng-model="series.visible" class="show-hide-check" ng-change="showHideSeries(series.signature)"> */}
+              {/* <input title="Show/Hide series" type="checkbox" ng-model="series.visible" class="show-hide-check" ng-change="showHideSeries(series.signature)"> */}
             </div>
           ))}
       </Container>
@@ -61,31 +76,16 @@ export class SelectedTestsContainer extends React.Component {
   }
 }
 
-// <!-- <table class="table table-bordered graph-legend-table">
-// <tr ng-repeat="series in seriesList">
-//   <td>
-//     <button class="close" ng-click="removeSeries(series.projectName, series.signature)">
-//       <span aria-hidden="true">&times;</span>
-//       <span class="sr-only">Remove series</span>
-//     </button>
-//       <div class="graph-legend" style="border-left-color: {{series.blockColor}}" ng-class="{'series-inactive':!series.visible}">
-//         <a href="" id="test-name" ng-click="addTestData('addRelatedConfigs', series.signature)" title="Add related configurations">{{series.name}}</a><br/>
-//         <a href="" id="project-name" ng-click="addTestData('addRelatedBranches', series.signature)" title="Add related branches">{{series.projectName}}</a><br/>
-//         <a href="" id="platform" ng-click="addTestData('addRelatedPlatform', series.signature)" title="Add related platforms">{{series.platform}}</a><br/>
-//         <div class="signature"><small>{{series.signature}}</small></div>
-//       </div>
-//       <input title="Show/Hide series" type="checkbox" ng-model="series.visible" class="show-hide-check" ng-change="showHideSeries(series.signature)">
-//   </td>
-// </tr>
-// </table> -->
 SelectedTestsContainer.propTypes = {
   seriesList: PropTypes.arrayOf(PropTypes.shape({})),
   addTestData: PropTypes.func,
+  removeSeries: PropTypes.func,
 };
 
 SelectedTestsContainer.defaultProps = {
   seriesList: undefined,
   addTestData: undefined,
+  removeSeries: undefined,
 };
 
 perf.component(
