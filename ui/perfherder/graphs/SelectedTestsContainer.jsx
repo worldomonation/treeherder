@@ -36,8 +36,11 @@ export class SelectedTestsContainer extends React.Component {
               >
                 <FontAwesomeIcon icon={faTimes} size="sm" title="" />
               </span>
-              {/* style="border-left-color: {{series.blockColor}}" ng-class="{'series-inactive':!series.visible}" */}
-              <div className="graph-legend">
+              <div
+                className={`graph-legend ${series.color} ${
+                  !series.visible ? 'series-inactive' : 'active'
+                }`}
+              >
                 <span
                   className="p-0 btn btn-link text-info text-left"
                   onClick={() =>

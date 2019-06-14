@@ -55,7 +55,7 @@ h1 {
   margin-bottom: 30px;
   cursor: crosshair;
 }
-
+/* 
 .graph-legend-table {
   table-layout: fixed;
 }
@@ -63,7 +63,7 @@ h1 {
 .graph-legend-table tbody > tr > td {
   padding: 0;
 }
-
+*/
 .graph-legend {
   padding: 8px 20px 8px 8px;
   text-overflow: ellipsis;
@@ -76,7 +76,7 @@ h1 {
   color: #d3d3d3;
 }
 
-.graph-legend-table .close {
+/* .graph-legend-table .close {
   margin-right: 6px;
 }
 
@@ -84,7 +84,7 @@ h1 {
   float: right;
   margin-top: -20px;
   margin-right: 6px;
-}
+} */
 
 .graph-right-padding {
   flex: none;
@@ -435,33 +435,33 @@ li.pagination-next .material-icons::before {
 }
 
 .blue {
-  color: blue;
+  border-left-color: blue;
 }
 
 .darkgreen {
-  color: darkgreen;
+  border-left-color: darkgreen;
 }
 
 .darkcyan {
-  color: darkcyan
+  border-left-color: darkcyan
 }
 
 .darkseagreen {
-  color: darkseagreen;
+  border-left-color: darkseagreen;
 }
 
 .steelblue {
-  color: steelblue
+  border-left-color: steelblue
 }
 
 .darkorchid {
-  color: darkorchid
+  border-left-color: darkorchid
 }
 
 .darkturquoise {
-  color: darkturquoise;  
+  border-left-color: darkturquoise;  
 }
 
 .darkslateblue {
-  color: darkslateblue
+  border-left-color: darkslateblue
 }
