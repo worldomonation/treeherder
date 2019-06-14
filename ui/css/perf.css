@@ -433,3 +433,35 @@ li.pagination-next .material-icons::before {
 .max-width-row-text {
   max-width: 1194px;
 }
+
+.blue {
+  color: blue;
+}
+
+.darkgreen {
+  color: darkgreen;
+}
+
+.darkcyan {
+  color: darkcyan
+}
+
+.darkseagreen {
+  color: darkseagreen;
+}
+
+.steelblue {
+  color: steelblue
+}
+
+.darkorchid {
+  color: darkorchid
+}
+
+.darkturquoise {
+  color: darkturquoise;  
+}
+
+.darkslateblue {
+  color: darkslateblue
+}
