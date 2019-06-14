@@ -24,25 +24,25 @@ export class SelectedTestsContainer extends React.Component {
     const { seriesList, addTestData, removeSeries } = this.props;
 
     return (
-      <Container className="graph-legend-table">
+      <Container className="graph-legend-table pl-0 pb-4">
         {seriesList.length > 0 &&
           seriesList.map(series => (
             <div key={series.id}>
               <span
-                className="close"
+                className="close mr-3 mt-2"
                 onClick={() =>
                   removeSeries(series.projectName, series.signature)
                 }
               >
-                <FontAwesomeIcon icon={faTimes} size="sm" title="" />
+                <FontAwesomeIcon icon={faTimes} size="xs" title="" />
               </span>
               <div
-                className={`graph-legend ${series.color} ${
+                className={`border p-3 ${
                   !series.visible ? 'series-inactive' : 'active'
                 }`}
               >
                 <span
-                  className="p-0 btn btn-link text-info text-left"
+                  className={`p-0 btn btn-link ${series.color} text-left`}
                   onClick={() =>
                     addTestData('addRelatedConfigs', series.signature)
                   }

@@ -64,12 +64,13 @@ h1 {
   padding: 0;
 }
 */
-.graph-legend {
+/* .graph-legend {
   padding: 8px 20px 8px 8px;
   text-overflow: ellipsis;
   font-size: 12px;
+  border: 1px solid lightgray; 
   border-left: 10px solid;
-}
+} */
 
 .graph-legend .series-inactive {
   border-color: #d3d3d3;
@@ -78,13 +79,13 @@ h1 {
 
 /* .graph-legend-table .close {
   margin-right: 6px;
-}
+} */
 
 .graph-legend-table .show-hide-check {
   float: right;
   margin-top: -20px;
   margin-right: 6px;
-} */
+}
 
 .graph-right-padding {
   flex: none;
@@ -435,33 +436,33 @@ li.pagination-next .material-icons::before {
 }
 
 .blue {
-  border-left-color: blue;
+  color: blue;
 }
 
 .darkgreen {
-  border-left-color: darkgreen;
+  color: darkgreen;
 }
 
 .darkcyan {
-  border-left-color: darkcyan
+  color: darkcyan
 }
 
 .darkseagreen {
-  border-left-color: darkseagreen;
+  color: darkseagreen;
 }
 
 .steelblue {
-  border-left-color: steelblue
+  color: steelblue
 }
 
 .darkorchid {
-  border-left-color: darkorchid
+  color: darkorchid
 }
 
 .darkturquoise {
-  border-left-color: darkturquoise;  
+  color: darkturquoise;  
 }
 
 .darkslateblue {
-  border-left-color: darkslateblue
+  color: darkslateblue
 }
