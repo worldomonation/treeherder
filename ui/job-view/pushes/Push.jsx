@@ -16,13 +16,16 @@ import RunnableJobModel from '../../models/runnableJob';
 import { getRevisionTitle } from '../../helpers/revision';
 import { getPercentComplete } from '../../helpers/display';
 import { notify } from '../redux/stores/notifications';
+import {
+  updateJobMap,
+  recalculateUnclassifiedCounts,
+} from '../redux/stores/pushes';
 
 import FuzzyJobFinder from './FuzzyJobFinder';
 import { Revision } from './Revision';
 import PushHeader from './PushHeader';
 import PushJobs from './PushJobs';
 import { RevisionList } from './RevisionList';
-import PrimaryNavBar from '../headerbars/PrimaryNavBar';
 
 const watchCycleStates = ['none', 'push', 'job', 'none'];
 const platformArray = Object.values(thPlatformMap);
@@ -550,7 +553,11 @@ Push.propTypes = {
   pushHealthVisibility: PropTypes.string.isRequired,
 };
 
+const mapStateToProps = ({ pushes: { allUnclassifiedFailureCount } }) => ({
+  allUnclassifiedFailureCount,
+});
+
 export default connect(
-  null,
-  { notify },
+  mapStateToProps,
+  { notify, updateJobMap, recalculateUnclassifiedCounts },
 )(Push);

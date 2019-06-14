@@ -25,7 +25,7 @@ class PushList extends React.Component {
   }
 
   componentDidMount() {
-    this.props.fetchPushes();
+    this.props.fetchPushes(notify);
   }
 
   componentDidUpdate(prevProps) {
@@ -79,6 +79,7 @@ class PushList extends React.Component {
       duplicateJobsVisible,
       groupCountsExpanded,
       pushHealthVisibility,
+      countPinnedJobs,
     } = this.props;
     const { notificationSupported } = this.state;
     const { isLoggedIn } = user;
@@ -133,7 +134,7 @@ class PushList extends React.Component {
             {[10, 20, 50].map(count => (
               <div
                 className="btn btn-light-bordered"
-                onClick={() => fetchNextPushes(count)}
+                onClick={() => fetchNextPushes(count, countPinnedJobs)}
                 key={count}
               >
                 {count}

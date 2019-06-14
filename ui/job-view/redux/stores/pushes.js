@@ -17,9 +17,10 @@ import { isUnclassifiedFailure } from '../../../helpers/job';
 import JobModel from '../../../models/job';
 import { thEvents } from '../../../helpers/constants';
 
-const FETCH_PUSHES = 'FETCH_PUSHES';
+// const FETCH_PUSHES = 'FETCH_PUSHES';
 const REQUEST_PUSHES = 'REQUEST_PUSHES';
-const FETCH_NEXT_PUSHES = 'FETCH_NEXT_PUSHES';
+const ADD_PUSHES = 'ADD_PUSHES';
+// const FETCH_NEXT_PUSHES = 'FETCH_NEXT_PUSHES';
 const FETCH_NEW_JOBS = 'FETCH_NEW_JOBS';
 const RECALCULATE_UNCLASSIFIED_COUNTS = 'RECALCULATE_UNCLASSIFIED_COUNTS';
 const UPDATE_JOB_MAP = 'UPDATE_JOB_MAP';
@@ -32,15 +33,10 @@ const PUSH_POLLING_KEYS = ['tochange', 'enddate', 'revision', 'author'];
 const PUSH_FETCH_KEYS = [...PUSH_POLLING_KEYS, 'fromchange', 'startdate'];
 // const PUSH_POLL_INTERVAL = 60000;
 
-export const fetchPushes = count => ({
-  type: FETCH_PUSHES,
-  count,
-});
-
-export const fetchNextPushes = countPinnedJobs => ({
-  type: FETCH_NEXT_PUSHES,
-  countPinnedJobs,
-});
+// export const fetchNextPushes = countPinnedJobs => ({
+//   type: FETCH_NEXT_PUSHES,
+//   countPinnedJobs,
+// });
 
 export const fetchNewJobs = setSelectedJob => ({
   type: FETCH_NEW_JOBS,
@@ -57,10 +53,6 @@ export const updateJobMap = jobs => ({
   jobs,
 });
 
-export const requestPushes = () => ({
-  type: REQUEST_PUSHES,
-});
-
 const getRevisionTips = pushList => {
   return {
     revisionTips: pushList.map(push => ({
@@ -73,16 +65,17 @@ const getRevisionTips = pushList => {
 
 const addPushes = (data, pushList, jobMap) => {
   if (data.results.length > 0) {
+    console.log('data', data.results.length, pushList, jobMap);
     const pushIds = pushList.map(push => push.id);
     const newPushList = [
       ...pushList,
       ...data.results.filter(push => !pushIds.includes(push.id)),
     ];
+    console.log('newPushList', newPushList);
     newPushList.sort((a, b) => b.push_timestamp - a.push_timestamp);
     const oldestPushTimestamp =
       newPushList[newPushList.length - 1].push_timestamp;
 
-    console.log('newPushList', newPushList);
     return {
       pushList: newPushList,
       oldestPushTimestamp,
@@ -93,15 +86,13 @@ const addPushes = (data, pushList, jobMap) => {
   return {};
 };
 
-const doFetchPushes = async (
-  count = DEFAULT_PUSH_COUNT,
-  pushList,
-  jobMap,
-  notify,
-  oldestPushTimestamp,
-) => {
-  return function(dispatch) {
-    dispatch(requestPushes());
+export const fetchPushes = (notify, count = DEFAULT_PUSH_COUNT) => {
+  return function(dispatch, getState) {
+    const {
+      pushes: { pushList, jobMap, oldestPushTimestamp },
+    } = getState();
+
+    dispatch({ type: REQUEST_PUSHES });
 
     // Only pass supported query string params to this endpoint.
     const options = {
@@ -119,18 +110,16 @@ const doFetchPushes = async (
       options.push_timestamp__lte = oldestPushTimestamp;
     }
 
-    console.log('in the thunk');
-
     PushModel.getList(options).then(({ data, failureStatus }) => {
       if (!failureStatus) {
-        return {
-          ...addPushes(
+        return dispatch({
+          type: ADD_PUSHES,
+          pushResults: addPushes(
             data.results.length ? data : { results: [] },
             pushList,
             jobMap,
           ),
-          loadingData: false,
-        };
+        });
       }
       notify('Error retrieving push data!', 'danger', { sticky: true });
       return {};
@@ -138,6 +127,8 @@ const doFetchPushes = async (
     return {};
   };
 };
+
+// export const fetchPushes = count => doFetchPushes(count);
 
 // TODO: Can we do away with reloading entirely?
 // const getNewReloadTriggerParams = () => {
@@ -152,41 +143,41 @@ const doFetchPushes = async (
 /**
  * Get the next batch of pushes based on our current offset.
  */
-const doFetchNextPushes = count => {
-  const params = getAllUrlParams();
+export const fetchNextPushes = count => {
+  return function() {
+    const params = getAllUrlParams();
 
-  this.setValue({ loadingPushes: true });
-  if (params.has('revision')) {
-    // We are viewing a single revision, but the user has asked for more.
-    // So we must replace the ``revision`` param with ``tochange``, which
-    // will make it just the top of the range.  We will also then get a new
-    // ``fromchange`` param after the fetch.
-    this.skipNextPageReload = true;
-    const revision = params.get('revision');
-    params.delete('revision');
-    params.set('tochange', revision);
-    setLocation(params);
-  } else if (params.has('startdate')) {
-    // We are fetching more pushes, so we don't want to limit ourselves by
-    // ``startdate``.  And after the fetch, ``startdate`` will be invalid,
-    // and will be replaced on the location bar by ``fromchange``.
-    this.skipNextPageReload = true;
-    setUrlParam('startdate', null);
-  }
-  return fetchPushes(count).then(this.updateUrlFromchange);
+    if (params.has('revision')) {
+      // We are viewing a single revision, but the user has asked for more.
+      // So we must replace the ``revision`` param with ``tochange``, which
+      // will make it just the top of the range.  We will also then get a new
+      // ``fromchange`` param after the fetch.
+      // this.skipNextPageReload = true;
+      const revision = params.get('revision');
+      params.delete('revision');
+      params.set('tochange', revision);
+      setLocation(params);
+    } else if (params.has('startdate')) {
+      // We are fetching more pushes, so we don't want to limit ourselves by
+      // ``startdate``.  And after the fetch, ``startdate`` will be invalid,
+      // and will be replaced on the location bar by ``fromchange``.
+      // this.skipNextPageReload = true;
+      setUrlParam('startdate', null);
+    }
+    return fetchPushes(count);
+  };
 };
 
-const doUpdateJobMap = jobList => {
-  const { jobMap, pushList } = this.state;
-
+const doUpdateJobMap = (jobList, jobMap, pushList) => {
   if (jobList.length) {
     // lodash ``keyBy`` is significantly faster than doing a ``reduce``
-    this.setValue({
+    return {
       jobMap: { ...jobMap, ...keyBy(jobList, 'id') },
       jobsLoaded: pushList.every(push => push.jobsLoaded),
       pushList: [...pushList],
-    });
+    };
   }
+  return {};
 };
 
 // TODO: Could this be done elsewhere?  Where it's called?  Or perhaps in App.
@@ -228,8 +219,7 @@ const doRecalculateUnclassifiedCounts = (jobMap, filterModel) => {
   };
 };
 
-const getLastModifiedJobTime = () => {
-  const { jobMap } = this.state;
+const getLastModifiedJobTime = jobMap => {
   const latest =
     max(Object.values(jobMap).map(job => new Date(`${job.last_modified}Z`))) ||
     new Date();
@@ -238,13 +228,13 @@ const getLastModifiedJobTime = () => {
   return latest;
 };
 
-const doFetchNewJobs = async (setSelectedJob, pushList) => {
+const doFetchNewJobs = async (setSelectedJob, pushList, jobMap) => {
   if (!pushList.length) {
     // If we have no pushes, then no need to poll for jobs.
     return;
   }
   const pushIds = pushList.map(push => push.id);
-  const lastModified = getLastModifiedJobTime();
+  const lastModified = getLastModifiedJobTime(jobMap);
   const jobList = await JobModel.getList(
     {
       push_id__in: pushIds.join(','),
@@ -288,25 +278,23 @@ const initialState = {
 };
 
 export const reducer = (state = initialState, action) => {
-  const { count, notify, jobs } = action;
-  const { oldestPushTimestamp, setSelectedJob, pushList, jobMap } = state;
+  const { filterModel, jobs, pushResults } = action;
+  const { setSelectedJob, pushList, jobMap } = state;
   // console.log('reducer', state, action.type);
+
   switch (action.type) {
-    case FETCH_PUSHES:
-      return {
-        ...state,
-        ...doFetchPushes(count, pushList, jobMap, notify, oldestPushTimestamp),
-      };
     case REQUEST_PUSHES:
       return { ...state, loadingPushes: true };
-    case FETCH_NEXT_PUSHES:
-      return { ...state, ...doFetchNextPushes(count) };
+    case ADD_PUSHES:
+      return { ...state, loadingPushes: false, ...pushResults };
+    // case FETCH_NEXT_PUSHES:
+    //   return { ...state, ...doFetchNextPushes(count) };
     case FETCH_NEW_JOBS:
-      return { ...state, ...doFetchNewJobs(setSelectedJob, pushList) };
+      return { ...state, ...doFetchNewJobs(setSelectedJob, pushList, jobMap) };
     case RECALCULATE_UNCLASSIFIED_COUNTS:
-      return { ...state, ...doRecalculateUnclassifiedCounts(notify, jobMap) };
+      return { ...state, ...doRecalculateUnclassifiedCounts(jobMap, filterModel) };
     case UPDATE_JOB_MAP:
-      return { ...state, ...doUpdateJobMap(jobs) };
+      return { ...state, ...doUpdateJobMap(jobs, jobMap, pushList) };
     default:
       return state;
   }
