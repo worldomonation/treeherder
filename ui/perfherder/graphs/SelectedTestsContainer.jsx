@@ -1,13 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { react2angular } from 'react2angular/index.es2015';
-import {
-  Container,
-  // Row,
-  // Pagination,
-  // PaginationItem,
-  // PaginationLink,
-} from 'reactstrap';
+import { Container, Input } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 
@@ -29,7 +23,7 @@ export class SelectedTestsContainer extends React.Component {
           seriesList.map(series => (
             <div key={series.id}>
               <span
-                className="close mr-3 mt-2"
+                className="close mr-3 my-2 ml-2"
                 onClick={() =>
                   removeSeries(series.projectName, series.signature)
                 }
@@ -37,39 +31,41 @@ export class SelectedTestsContainer extends React.Component {
                 <FontAwesomeIcon icon={faTimes} size="xs" title="" />
               </span>
               <div
-                className={`graph-legend-font border p-3 ${
+                className={`graph-legend-card border p-3 ${
                   !series.visible ? 'series-inactive' : 'active'
                 }`}
               >
-                <span
-                  className={`p-0 btn btn-link ${series.color} text-left`}
+                <p
+                  className={`p-0 mb-1 ${series.color} text-left`}
                   onClick={() =>
                     addTestData('addRelatedConfigs', series.signature)
                   }
                   title="Add related configurations"
                 >
                   {series.name}
-                </span>
-                <span
-                  className="p-0 btn btn-link text-muted text-left"
+                </p>
+                <p
+                  className="p-0 mb-1 text-muted text-left"
                   onClick={() =>
                     addTestData('addRelatedBranches', series.signature)
                   }
                   title="Add related branches"
                 >
                   {series.projectName}
-                </span>
-                <br />
-                <span
-                  className="p-0 btn btn-link text-muted text-left"
+                </p>
+                <p
+                  className="p-0 mb-1 text-muted text-left"
                   onClick={() =>
                     addTestData('addRelatedPlatforms', series.signature)
                   }
                   title="Add related branches"
                 >
                   {series.platform}
-                </span>
-                <p className="small text-truncate">{series.signature}</p>
+                </p>
+                <span className="small">{`${series.signature.slice(
+                  0,
+                  16,
+                )}...`}</span>
               </div>
               {/* <input title="Show/Hide series" type="checkbox" ng-model="series.visible" class="show-hide-check" ng-change="showHideSeries(series.signature)"> */}
             </div>

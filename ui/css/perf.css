@@ -68,12 +68,9 @@ h1 {
 .graph-legend {
   width: 275px;
 }
-.graph-legend-font > span {
-  /* padding: 8px 20px 8px 8px;
-  text-overflow: ellipsis; */
-  font-size: 13px;
-  /* border: 1px solid lightgray; 
-  border-left: 10px solid; */
+
+.graph-legend-card > p {
+  cursor: pointer;
 }
 
 .graph-legend .series-inactive {
