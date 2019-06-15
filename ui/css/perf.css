@@ -78,11 +78,12 @@ h1 {
   color: #d3d3d3;
 }
 
-/* .graph-legend-table .close {
-  margin-right: 6px;
-} */
+.show-hide-check {
+  margin-top: 20px;
+  margin-left: 15px;
+}
 
-/* .graph-legend-table .show-hide-check {
+/* .show-hide-check {
   float: right;
   margin-top: -20px;
   margin-right: 6px;
