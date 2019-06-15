@@ -439,6 +439,7 @@ li.pagination-next .material-icons::before {
   max-width: 1194px;
 }
 
+/* graph colors */
 .blue {
   color: blue;
 }
@@ -463,8 +464,8 @@ li.pagination-next .material-icons::before {
   color: darkorchid
 }
 
-.darkturquoise {
-  color: darkturquoise;  
+.lightseagreen {
+  color: lightseagreen; 
 }
 
 .darkslateblue {

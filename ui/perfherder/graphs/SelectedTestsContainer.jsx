@@ -13,10 +13,12 @@ export class SelectedTestsContainer extends React.Component {
     this.state = {};
   }
 
-  // TODO series info isn't shown in url anymore when tests are added
   render() {
     const { seriesList, addTestData, removeSeries } = this.props;
-
+    // TODO add showHideSeries checkbox functionality
+    // ${
+    //   !series.visible ? 'series-inactive' : 'active'
+    // }`
     return (
       <Container className="graph-legend pl-0 pb-4">
         {seriesList.length > 0 &&
@@ -30,21 +32,16 @@ export class SelectedTestsContainer extends React.Component {
               >
                 <FontAwesomeIcon icon={faTimes} size="xs" title="" />
               </span>
-              <FormGroup>
+              <FormGroup check>
                 <Input
-                  check
                   className="show-hide-check"
                   type="checkbox"
                   // checked={series.visible}
                   aria-label="Show/Hide series"
                   title="Show/Hide series"
-                  onChange={() => {}}
+                  // onChange={() => showHideSeries(series.signature)}
                 />
-                <div
-                  className={`graph-legend-card border pl-5 py-3 pr-3 ${
-                    !series.visible ? 'series-inactive' : 'active'
-                  }`}
-                >
+                <div className="graph-legend-card border pl-5 py-3 pr-3">
                   <p
                     className={`p-0 mb-1 ${series.color} text-left`}
                     onClick={() =>
@@ -78,7 +75,6 @@ export class SelectedTestsContainer extends React.Component {
                   )}...`}</span>
                 </div>
               </FormGroup>
-              {/* <input title="Show/Hide series" type="checkbox" ng-model="series.visible" class="show-hide-check" ng-change="showHideSeries(series.signature)"> */}
             </div>
           ))}
       </Container>
