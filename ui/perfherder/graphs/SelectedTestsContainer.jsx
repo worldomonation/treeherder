@@ -16,6 +16,7 @@ export class SelectedTestsContainer extends React.Component {
   render() {
     const { seriesList, addTestData, removeSeries } = this.props;
     // TODO add showHideSeries checkbox functionality
+    // TODO close button should have cursor pointer (where is that style coming from?)
     // ${
     //   !series.visible ? 'series-inactive' : 'active'
     // }`
@@ -24,15 +25,15 @@ export class SelectedTestsContainer extends React.Component {
         {seriesList.length > 0 &&
           seriesList.map(series => (
             <div key={series.id}>
-              <span
-                className="close mr-3 my-2 ml-2"
-                onClick={() =>
-                  removeSeries(series.projectName, series.signature)
-                }
-              >
-                <FontAwesomeIcon icon={faTimes} size="xs" title="" />
-              </span>
               <FormGroup check>
+                <span
+                  className="close mr-3 my-2 ml-2"
+                  onClick={() =>
+                    removeSeries(series.projectName, series.signature)
+                  }
+                >
+                  <FontAwesomeIcon icon={faTimes} size="xs" title="" />
+                </span>
                 <Input
                   className="show-hide-check"
                   type="checkbox"
