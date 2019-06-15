@@ -25,7 +25,7 @@ export class SelectedTestsContainer extends React.Component {
         {seriesList.length > 0 &&
           seriesList.map(series => (
             <div key={series.id}>
-              <FormGroup check>
+              <FormGroup check className="pl-0">
                 <span
                   className="close mr-3 my-2 ml-2"
                   onClick={() =>
