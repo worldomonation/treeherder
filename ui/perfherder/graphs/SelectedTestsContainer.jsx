@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { react2angular } from 'react2angular/index.es2015';
-import { Container, Form, FormGroup, Input } from 'reactstrap';
+import { Container, FormGroup, Input } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 
@@ -21,7 +21,7 @@ export class SelectedTestsContainer extends React.Component {
       <Container className="graph-legend pl-0 pb-4">
         {seriesList.length > 0 &&
           seriesList.map(series => (
-            <Form key={series.id}>
+            <div key={series.id}>
               <span
                 className="close mr-3 my-2 ml-2"
                 onClick={() =>
@@ -35,7 +35,7 @@ export class SelectedTestsContainer extends React.Component {
                   check
                   className="show-hide-check"
                   type="checkbox"
-                  checked={series.visible}
+                  // checked={series.visible}
                   aria-label="Show/Hide series"
                   title="Show/Hide series"
                   onChange={() => {}}
@@ -79,7 +79,7 @@ export class SelectedTestsContainer extends React.Component {
                 </div>
               </FormGroup>
               {/* <input title="Show/Hide series" type="checkbox" ng-model="series.visible" class="show-hide-check" ng-change="showHideSeries(series.signature)"> */}
-            </Form>
+            </div>
           ))}
       </Container>
     );
