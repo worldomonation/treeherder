@@ -24,7 +24,7 @@ export class SelectedTestsContainer extends React.Component {
     const { seriesList, addTestData, removeSeries } = this.props;
 
     return (
-      <Container className="graph-legend-table pl-0 pb-4">
+      <Container className="graph-legend pl-0 pb-4">
         {seriesList.length > 0 &&
           seriesList.map(series => (
             <div key={series.id}>
@@ -37,7 +37,7 @@ export class SelectedTestsContainer extends React.Component {
                 <FontAwesomeIcon icon={faTimes} size="xs" title="" />
               </span>
               <div
-                className={`border p-3 ${
+                className={`graph-legend-font border p-3 ${
                   !series.visible ? 'series-inactive' : 'active'
                 }`}
               >
